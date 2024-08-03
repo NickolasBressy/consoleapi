@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gerenciar Aplicações Rejeitadas</title>
+</head>
+<body>
+  <h1>Aprovar ou Rejeitar Aplicações Rejeitadas</h1>
+
+  <h2>Aplicações Rejeitadas</h2>
+  <button onclick="fetchRejectedApps()">Carregar Rejeitados</button>
+  <ul id="rejectedAppsList"></ul>
+
+  <script>
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
+
+    function fetchRejectedApps() {
+      fetch(scriptUrl)
+        .then(response => response.json())
+        .then(data => {
+          const list = document.getElementById('rejectedAppsList');
+          list.innerHTML = '';
+
+          data.forEach(app => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `ID: ${app.app_id}, Nome: ${app.app_name}`;
+
+            // Adiciona botões para aprovar ou rejeitar
+            const approveButton = document.createElement('button');
+            approveButton.textContent = 'Aprovar';
+            approveButton.onclick = () => updateAppStatus(app.rowIndex, 'Approved');
+
+            const rejectButton = document.createElement('button');
+            rejectButton.textContent = 'Rejeitar';
+            rejectButton.onclick = () => updateAppStatus(app.rowIndex, 'Rejected');
+
+            listItem.appendChild(approveButton);
+            listItem.appendChild(rejectButton);
+            list.appendChild(listItem);
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao buscar rejeitados:', error);
+        });
+    }
+
+    function updateAppStatus(rowIndex, status) {
+      fetch(scriptUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          rowIndex: rowIndex,
+          status_app: status
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(`Resultado: ${data.result}`);
+        fetchRejectedApps(); // Recarregar a lista após a atualização
+      })
+      .catch(error => {
+        console.error('Erro ao atualizar status:', error);
+      });
+    }
+  </script>
+</body>
+</html>
