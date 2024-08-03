@@ -1,68 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Gerenciar Aplicações Rejeitadas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Aplicativos</title>
 </head>
 <body>
-  <h1>Aprovar ou Rejeitar Aplicações Rejeitadas</h1>
+    <h1>Gerenciador de Aplicativos Rejeitados</h1>
+    <button id="fetchRejectedApps">Buscar Rejeitados</button>
+    <div id="rejectedApps"></div>
 
-  <h2>Aplicações Rejeitadas</h2>
-  <button onclick="fetchRejectedApps()">Carregar Rejeitados</button>
-  <ul id="rejectedAppsList"></ul>
+    <script>
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Proxy CORS
 
-  <script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
-
-    function fetchRejectedApps() {
-      fetch(scriptUrl)
-        .then(response => response.json())
-        .then(data => {
-          const list = document.getElementById('rejectedAppsList');
-          list.innerHTML = '';
-
-          data.forEach(app => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `ID: ${app.app_id}, Nome: ${app.app_name}`;
-
-            // Adiciona botões para aprovar ou rejeitar
-            const approveButton = document.createElement('button');
-            approveButton.textContent = 'Aprovar';
-            approveButton.onclick = () => updateAppStatus(app.rowIndex, 'Approved');
-
-            const rejectButton = document.createElement('button');
-            rejectButton.textContent = 'Rejeitar';
-            rejectButton.onclick = () => updateAppStatus(app.rowIndex, 'Rejected');
-
-            listItem.appendChild(approveButton);
-            listItem.appendChild(rejectButton);
-            list.appendChild(listItem);
-          });
-        })
-        .catch(error => {
-          console.error('Erro ao buscar rejeitados:', error);
+        document.getElementById('fetchRejectedApps').addEventListener('click', function() {
+            fetch(proxyUrl + 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('rejectedApps');
+                    container.innerHTML = '';
+                    data.forEach((app, index) => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `
+                            <p>App ID: ${app.app_id}</p>
+                            <p>Nome: ${app.app_name}</p>
+                            <p>Descrição: ${app.app_description}</p>
+                            <button onclick="approveApp(${index})">Aprovar</button>
+                            <hr>
+                        `;
+                        container.appendChild(div);
+                    });
+                })
+                .catch(error => console.error('Erro ao buscar rejeitados:', error));
         });
-    }
 
-    function updateAppStatus(rowIndex, status) {
-      fetch(scriptUrl, {
-        method: 'POST',
-        body: JSON.stringify({
-          rowIndex: rowIndex,
-          status_app: status
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(`Resultado: ${data.result}`);
-        fetchRejectedApps(); // Recarregar a lista após a atualização
-      })
-      .catch(error => {
-        console.error('Erro ao atualizar status:', error);
-      });
-    }
-  </script>
+        function approveApp(index) {
+            const approvedApp = { app_id: index, status_app: 'Approved' };
+            
+            fetch(proxyUrl + 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(approvedApp)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Status atualizado:', data);
+                alert('Aplicativo aprovado!');
+                // Atualize a lista após a aprovação
+                document.getElementById('fetchRejectedApps').click();
+            })
+            .catch(error => console.error('Erro ao atualizar status:', error));
+        }
+    </script>
 </body>
 </html>
