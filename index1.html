@@ -50,7 +50,6 @@
     
     <script>
         function sendData() {
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
             const url = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
             const formData = {
                 app_id: document.getElementById('app_id').value,
@@ -66,16 +65,24 @@
                 status_app: document.getElementById('status_app').value
             };
 
-            fetch(proxyUrl + url, {
+            fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
             })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('response').innerText = 'Dados enviados com sucesso';
+            .then(response => {
+                return response.text(); // Ler a resposta como texto para depuração
+            })
+            .then(text => {
+                console.log('Resposta:', text); // Imprimir resposta no console para depuração
+                try {
+                    const data = JSON.parse(text); // Tentar converter a resposta para JSON
+                    document.getElementById('response').innerText = 'Dados enviados com sucesso';
+                } catch (error) {
+                    document.getElementById('response').innerText = `Erro ao processar a resposta: ${error.message}`;
+                }
             })
             .catch((error) => {
                 document.getElementById('response').innerText = `Erro: ${error.message}`;
