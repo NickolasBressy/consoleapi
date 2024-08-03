@@ -1,113 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Gerenciar Aplicativos</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        .button {
-            cursor: pointer;
-            padding: 5px 10px;
-            margin: 2px;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            background-color: #007bff;
-        }
-        .reject {
-            background-color: #dc3545;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Dados Rejeitados</title>
 </head>
 <body>
-    <h1>Aplicativos Rejeitados</h1>
-    <table id="rejected-apps">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Ícone</th>
-                <th>Descrição</th>
-                <th>Categoria</th>
-                <th>Comentários</th>
-                <th>Tag</th>
-                <th>URL de Download</th>
-                <th>Contagem de Downloads</th>
-                <th>ID do Desenvolvedor</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Linhas serão adicionadas aqui via JavaScript -->
-        </tbody>
-    </table>
+    <h1>Buscar Dados Rejeitados</h1>
+    
+    <button onclick="fetchRejectedData()">Buscar Dados Rejeitados</button>
+    
+    <div id="dataList"></div>
+    
     <script>
-        const scriptUrl = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
-
-        async function fetchRejectedApps() {
-            try {
-                const response = await fetch(scriptUrl, { method: 'GET' });
-                const data = await response.json();
-                const tableBody = document.querySelector('#rejected-apps tbody');
-                tableBody.innerHTML = '';
-
-                data.forEach(app => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${app.app_id}</td>
-                        <td>${app.app_name}</td>
-                        <td><img src="${app.app_icon}" alt="${app.app_name}" style="width:50px;height:50px;"></td>
-                        <td>${app.app_description}</td>
-                        <td>${app.app_category}</td>
-                        <td>${app.app_comments}</td>
-                        <td>${app.app_tag}</td>
-                        <td><a href="${app.app_download_url}" target="_blank">Download</a></td>
-                        <td>${app.app_download_count}</td>
-                        <td>${app.app_dev_id}</td>
-                        <td>
-                            <button class="button approve" onclick="updateStatus('${app.app_id}', 'Approved')">Aprovar</button>
-                            <button class="button reject" onclick="updateStatus('${app.app_id}', 'Rejected')">Rejeitar</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Erro ao buscar aplicativos rejeitados:', error);
-            }
+        function fetchRejectedData() {
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            const url = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
+            
+            fetch(proxyUrl + url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const dataList = document.getElementById('dataList');
+                dataList.innerHTML = '<ul>' + data.map(item => 
+                    `<li>${item.app_id}: ${item.app_name} - ${item.status_app}</li>`
+                ).join('') + '</ul>';
+            })
+            .catch((error) => {
+                document.getElementById('dataList').innerText = `Erro: ${error.message}`;
+            });
         }
-
-        async function updateStatus(app_id, status) {
-            try {
-                const response = await fetch(scriptUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ app_id, status_app: status })
-                });
-                const result = await response.json();
-                if (result.result === 'Success') {
-                    alert(`Aplicativo ${app_id} foi ${status.toLowerCase()} com sucesso.`);
-                    fetchRejectedApps(); // Atualiza a lista
-                } else {
-                    alert(`Erro: ${result.message}`);
-                }
-            } catch (error) {
-                console.error('Erro ao atualizar status:', error);
-            }
-        }
-
-        // Carrega os aplicativos rejeitados ao carregar a página
-        fetchRejectedApps();
     </script>
 </body>
 </html>
