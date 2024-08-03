@@ -50,8 +50,7 @@
     <script>
         function sendData() {
             const url = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
- // Substitua pela URL do seu script
-            
+
             const formData = {
                 app_id: document.getElementById('app_id').value,
                 app_name: document.getElementById('app_name').value,
@@ -73,15 +72,11 @@
                 },
                 body: JSON.stringify(formData),
             })
-            .then(response => response.json())
+            .then(response => response.json()) // Processa a resposta como JSON
             .then(data => {
-                if (data.result === 'Success') {
-                    document.getElementById('response').innerText = 'Dados enviados com sucesso!';
-                } else {
-                    document.getElementById('response').innerText = `Erro: ${data.message}`;
-                }
+                document.getElementById('response').innerText = `Resposta do servidor: ${JSON.stringify(data)}`;
             })
-            .catch(error => {
+            .catch((error) => {
                 document.getElementById('response').innerText = `Erro: ${error.message}`;
             });
         }
