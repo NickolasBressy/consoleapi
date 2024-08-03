@@ -49,38 +49,41 @@
     
     <script>
         function sendData() {
-    const url = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec'; // Substitua pela URL do seu script
-    
-    const formData = {
-        app_id: document.getElementById('app_id').value,
-        app_name: document.getElementById('app_name').value,
-        app_icon: document.getElementById('app_icon').value,
-        app_description: document.getElementById('app_description').value,
-        app_category: document.getElementById('app_category').value,
-        app_comments: document.getElementById('app_comments').value,
-        app_tag: document.getElementById('app_tag').value,
-        app_download_url: document.getElementById('app_download_url').value,
-        app_download_count: document.getElementById('app_download_count').value,
-        app_dev_id: document.getElementById('app_dev_id').value,
-        status_app: document.getElementById('status_app').value
-    };
+            const url = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec'; // Substitua pela URL do seu script
+            
+            const formData = {
+                app_id: document.getElementById('app_id').value,
+                app_name: document.getElementById('app_name').value,
+                app_icon: document.getElementById('app_icon').value,
+                app_description: document.getElementById('app_description').value,
+                app_category: document.getElementById('app_category').value,
+                app_comments: document.getElementById('app_comments').value,
+                app_tag: document.getElementById('app_tag').value,
+                app_download_url: document.getElementById('app_download_url').value,
+                app_download_count: document.getElementById('app_download_count').value,
+                app_dev_id: document.getElementById('app_dev_id').value,
+                status_app: document.getElementById('status_app').value
+            };
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-    })
-    .then(response => {
-        // Não é possível processar a resposta com no-cors
-        document.getElementById('response').innerText = 'Dados enviados com sucesso (resposta não processável com no-cors)';
-    })
-    .catch((error) => {
-        document.getElementById('response').innerText = `Erro: ${error.message}`;
-    });
-}
-
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'Success') {
+                    document.getElementById('response').innerText = 'Dados enviados com sucesso!';
+                } else {
+                    document.getElementById('response').innerText = `Erro: ${data.message}`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = `Erro: ${error.message}`;
+            });
+        }
     </script>
 </body>
 </html>
