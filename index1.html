@@ -41,14 +41,16 @@
         
         <label for="status_app">Status App (Approved/Rejected):</label>
         <input type="text" id="status_app" name="status_app" value="Rejected"><br><br>
+        
+        <button type="button" onclick="sendData()">Enviar Dados</button>
     </form>
     
-    <button type="button" onclick="sendData()">Enviar Dados</button>
     <p id="response"></p>
     
     <script>
         function sendData() {
-            const url = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec'; // URL do script Google Apps
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            const url = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
             
             const formData = {
                 app_id: document.getElementById('app_id').value,
@@ -61,11 +63,10 @@
                 app_download_url: document.getElementById('app_download_url').value,
                 app_download_count: document.getElementById('app_download_count').value,
                 app_dev_id: document.getElementById('app_dev_id').value,
-                status_app: document.getElementById('status_app').value,
-                rowIndex: 1 // Substitua com o índice da linha correta se necessário
+                status_app: document.getElementById('status_app').value
             };
 
-            fetch(url, {
+            fetch(proxyUrl + url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +75,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('response').innerText = `Resposta: ${JSON.stringify(data)}`;
+                document.getElementById('response').innerText = 'Dados enviados com sucesso';
             })
             .catch((error) => {
                 document.getElementById('response').innerText = `Erro: ${error.message}`;
