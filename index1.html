@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste POST com Dados Fictícios</title>
+</head>
+<body>
+    <h1>Enviar Dados via POST</h1>
+    
+    <form id="dataForm">
+        <label for="app_id">App ID:</label>
+        <input type="text" id="app_id" name="app_id" value="123456" required><br><br>
+        
+        <label for="app_name">App Name:</label>
+        <input type="text" id="app_name" name="app_name" value="Exemplo App" required><br><br>
+        
+        <label for="app_icon">App Icon URL:</label>
+        <input type="text" id="app_icon" name="app_icon" value="https://example.com/icon.png"><br><br>
+        
+        <label for="app_description">App Description:</label>
+        <textarea id="app_description" name="app_description">Descrição fictícia do aplicativo.</textarea><br><br>
+        
+        <label for="app_category">App Category:</label>
+        <input type="text" id="app_category" name="app_category" value="Utilidades"><br><br>
+        
+        <label for="app_comments">App Comments:</label>
+        <textarea id="app_comments" name="app_comments">Comentários fictícios sobre o aplicativo.</textarea><br><br>
+        
+        <label for="app_tag">App Tag:</label>
+        <input type="text" id="app_tag" name="app_tag" value="tagficticia"><br><br>
+        
+        <label for="app_download_url">App Download URL:</label>
+        <input type="text" id="app_download_url" name="app_download_url" value="https://example.com/download"><br><br>
+        
+        <label for="app_download_count">App Download Count:</label>
+        <input type="number" id="app_download_count" name="app_download_count" value="1000"><br><br>
+        
+        <label for="app_dev_id">App Developer ID:</label>
+        <input type="text" id="app_dev_id" name="app_dev_id" value="dev987654"><br><br>
+        
+        <label for="status_app">Status App (Approved/Rejected):</label>
+        <input type="text" id="status_app" name="status_app" value="Rejected"><br><br>
+        
+        <button type="button" onclick="sendData()">Enviar Dados</button>
+    </form>
+    
+    <p id="response"></p>
+    
+    <script>
+        function sendData() {
+    const url = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec'; // Substitua pela URL do seu script
+    
+    const formData = {
+        app_id: document.getElementById('app_id').value,
+        app_name: document.getElementById('app_name').value,
+        app_icon: document.getElementById('app_icon').value,
+        app_description: document.getElementById('app_description').value,
+        app_category: document.getElementById('app_category').value,
+        app_comments: document.getElementById('app_comments').value,
+        app_tag: document.getElementById('app_tag').value,
+        app_download_url: document.getElementById('app_download_url').value,
+        app_download_count: document.getElementById('app_download_count').value,
+        app_dev_id: document.getElementById('app_dev_id').value,
+        status_app: document.getElementById('status_app').value
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+    .then(response => {
+        // Não é possível processar a resposta com no-cors
+        document.getElementById('response').innerText = 'Dados enviados com sucesso (resposta não processável com no-cors)';
+    })
+    .catch((error) => {
+        document.getElementById('response').innerText = `Erro: ${error.message}`;
+    });
+}
+
+    </script>
+</body>
+</html>
