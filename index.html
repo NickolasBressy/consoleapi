@@ -11,10 +11,12 @@
     <div id="rejectedApps"></div>
 
     <script>
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
         const apiUrl = 'https://script.google.com/macros/s/AKfycbwQUyPz4plmOG7nQAvvNKibiHfiKl3Q83UIWC7gPmVXO1VgbzBiMLEGHR8I4AyVeJLl/exec';
+        const fullApiUrl = proxyUrl + apiUrl;
 
         document.getElementById('fetchRejectedApps').addEventListener('click', function() {
-            fetch(apiUrl)
+            fetch(fullApiUrl)
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('rejectedApps');
@@ -41,7 +43,7 @@
                 status_app: 'Approved'
             };
             
-            fetch(apiUrl, {
+            fetch(fullApiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
